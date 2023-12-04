@@ -1,3 +1,39 @@
+# Compiled source #
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.zip
+
+# Python virtual environment #
+/venv/
+
+
+# JetBrains IDEs #
+.idea/
+
+# macOS-specific files #
+.DS_Store
+
+# Logs #
+*.log
+logs/
+
+# Temporary files #
+tmp/
+temp/
+
+
+
 venv
 db.sqlite3
 Pipfile
