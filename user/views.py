@@ -16,3 +16,24 @@ class RegisterUserView(generics.CreateAPIView):
             return Response(serializer.data)
 
         return Response(serializer.errors)
+
+
+class UserRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = UserModel.objects.all()
+    serializer_class = UserSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+
+# class UserLoginView(generics.CreateAPIView):
+#     def create(self, request, *args, **kwargs):
+#         data = JSONParser().parse(request)
+#         email = data.get('email')
+#         password = data.get('password')
+#         query = UserModel.objects.all().filter(email=email, password=password).first()
+#
+#         print(query)
+#         return Response("User found")
