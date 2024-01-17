@@ -17,10 +17,15 @@ class Instructor(Enum):
 def is_valid_instructor(serializer):
     try:
         instructor = get_object_or_404(UserModel, id=serializer.data.get("course_instructor"))
-        if not instructor.is_instructor:
-            return Instructor.NOT_AN_INSTRUCTOR
     except Http404:
         return Instructor.NOT_FOUND_INSTRUCTOR
+
+
+def is_instructor(serializer):
+    instructor = serializer.validated_data.get('course_instructor')
+    if not instructor.is_instructor:
+        return Instructor.NOT_AN_INSTRUCTOR
+    return instructor
 
 
 class CourseCreateView(generics.CreateAPIView):
@@ -34,10 +39,11 @@ class CourseCreateView(generics.CreateAPIView):
                 return Response("Not found instructor")
 
         if serializer.is_valid():
-            instructor = is_valid_instructor(serializer)
+            instructor = is_instructor(serializer)
+            print(instructor)
             if instructor == Instructor.NOT_AN_INSTRUCTOR:
                 return Response("Not an instructor")
-            # serializer.save()
+            serializer.save()
             return Response(serializer.data)
 
         return Response(serializer.errors)
@@ -50,6 +56,17 @@ class CourseRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         course = self.get_object()
         serializer = CourseSerializer(course)
         return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        data = JSONParser().parse(request)
+        course = self.get_object()
+        serializer = CourseSerializer(course, data=data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors)
 
 
 class CourseListView(generics.ListAPIView):
