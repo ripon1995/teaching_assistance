@@ -50,3 +50,19 @@ class CourseRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         course = self.get_object()
         serializer = CourseSerializer(course)
         return Response(serializer.data)
+
+
+class CourseListView(generics.ListAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+
+class CourseListViewOfSingleInstructor(generics.ListAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+    def list(self, request, *args, **kwargs):
+        instructor_id = self.kwargs.get('instructor_id')
+        courses = self.get_queryset().filter(course_instructor__id=instructor_id)
+        serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
