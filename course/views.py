@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import generics
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from course.serializers import CourseSerializer, CourseEnrollSerializer, EnrolledCoursesSerializer
+from course.serializers import CourseSerializer, CourseEnrollSerializer, EnrolledCoursesSerializer, \
+    StudentListOfEnrolledCourseSerializer
 from user.models import UserModel
 from course.models import Course, CourseEnroll
 from enum import Enum
@@ -107,7 +108,7 @@ class CourseEnrollView(generics.CreateAPIView):
         return Response(serializer.errors, status=400)
 
 
-class EnrolledCourseListOfAUser(generics.ListAPIView):
+class EnrolledCourseListOfStudent(generics.ListAPIView):
     queryset = CourseEnroll.objects.all()
     serializer_class = EnrolledCoursesSerializer
 
@@ -115,4 +116,18 @@ class EnrolledCourseListOfAUser(generics.ListAPIView):
         user_id = self.kwargs.get('user_id')
         courses = self.get_queryset().filter(user=user_id)
         serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
+
+
+class StudentListOfEnrolledCourseView(generics.ListAPIView):
+    queryset = CourseEnroll.objects.all()
+    serializer_class = StudentListOfEnrolledCourseSerializer
+
+    def get_queryset(self):
+        course_id = self.kwargs.get('course_id')
+        return CourseEnroll.objects.filter(course_id=course_id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

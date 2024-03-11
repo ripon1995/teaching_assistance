@@ -20,3 +20,11 @@ class EnrolledCoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseEnroll
         fields = ['course_title']
+
+
+class StudentListOfEnrolledCourseSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='user.user_name')
+
+    class Meta:
+        model = CourseEnroll
+        fields = ['student_name']
