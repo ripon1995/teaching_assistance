@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework import generics
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from course.serializers import CourseSerializer
+from course.serializers import CourseSerializer, CourseEnrollSerializer, EnrolledCoursesSerializer, \
+    StudentListOfEnrolledCourseSerializer
 from user.models import UserModel
-from course.models import Course
+from course.models import Course, CourseEnroll
 from enum import Enum
 
 
@@ -82,4 +83,51 @@ class CourseListViewOfSingleInstructor(generics.ListAPIView):
         instructor_id = self.kwargs.get('instructor_id')
         courses = self.get_queryset().filter(course_instructor__id=instructor_id)
         serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
+
+
+class CourseEnrollView(generics.CreateAPIView):
+    serializer_class = CourseEnrollSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = JSONParser().parse(request)
+        user_id = self.kwargs.get('user_id')
+        try:
+            user = UserModel.objects.get(id=user_id)
+            if user.is_instructor:
+                return Response("Instructor cannot buy course")
+        except UserModel.DoesNotExist:
+            return Response("User not found", status=404)
+
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.validated_data['user'] = user
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=400)
+
+
+class EnrolledCourseListOfStudent(generics.ListAPIView):
+    queryset = CourseEnroll.objects.all()
+    serializer_class = EnrolledCoursesSerializer
+
+    def list(self, request, *args, **kwargs):
+        user_id = self.kwargs.get('user_id')
+        courses = self.get_queryset().filter(user=user_id)
+        serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
+
+
+class StudentListOfEnrolledCourseView(generics.ListAPIView):
+    queryset = CourseEnroll.objects.all()
+    serializer_class = StudentListOfEnrolledCourseSerializer
+
+    def get_queryset(self):
+        course_id = self.kwargs.get('course_id')
+        return CourseEnroll.objects.filter(course_id=course_id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
