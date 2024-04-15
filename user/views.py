@@ -34,7 +34,6 @@ class RegisterUserView(generics.CreateAPIView):
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class UserRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
@@ -53,3 +52,17 @@ class UserProfileRetrieveView(generics.RetrieveAPIView):
         user = self.get_object()
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+
+class ProfileUpdateView(generics.UpdateAPIView):
+    queryset = InstructorProfile.objects.all()
+    serializer_class = InstructorProfileSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        profile = self.get_object()
+        serializer = self.get_serializer(instance=profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
