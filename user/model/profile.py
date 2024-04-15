@@ -8,3 +8,7 @@ class InstructorProfile(models.Model):
     last_name = models.CharField(blank=True, max_length=30)
     experience = models.IntegerField(blank=True, default=0)
     subject = models.CharField(blank=True, max_length=30)
+
+    def save(self, *args, **kwargs):
+        self.pk = self.user.pk
+        super(InstructorProfile, self).save(*args, **kwargs)
