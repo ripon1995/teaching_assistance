@@ -7,6 +7,10 @@ class Course(models.Model):
     course_name = models.CharField(max_length=20)
     course_title = models.CharField(max_length=50)
     course_fee = models.CharField(max_length=10)
+    current_student = models.IntegerField(default=0)
+    capacity = models.IntegerField(default=100)
+    start_date = models.DateField(blank=False)
+    end_date = models.DateField(blank=False)
 
 
 class CourseEnroll(models.Model):
