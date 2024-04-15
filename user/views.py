@@ -45,7 +45,7 @@ class UserRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         return Response(serializer.data)
 
 
-class InstructorProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+class UserProfileRetrieveView(generics.RetrieveAPIView):
     queryset = InstructorProfile.objects.all()
     serializer_class = UserProfileSerializer
 
