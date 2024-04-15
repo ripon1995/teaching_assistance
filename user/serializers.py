@@ -7,12 +7,17 @@ from user.models import UserModel
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = ['user_name', 'email']
+        fields = ['id', 'user_name', 'email']
 
 
 class InstructorProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
     class Meta:
         model = InstructorProfile
-        fields = ['first_name', 'last_name', 'experience', 'subject', 'user']
+        fields = '__all__'
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = InstructorProfile
+        fields = '__all__'

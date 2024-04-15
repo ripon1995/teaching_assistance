@@ -1,7 +1,7 @@
 from rest_framework.parsers import JSONParser
 from rest_framework import generics, status
 from rest_framework.response import Response
-from user.serializers import UserSerializer, InstructorProfileSerializer
+from user.serializers import UserSerializer, InstructorProfileSerializer, UserProfileSerializer
 from user.models import UserModel
 from user.model.profile import InstructorProfile
 
@@ -12,6 +12,7 @@ class RegisterUserView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save()
+        print(user.pk)
         default_profile_data = {
             'user': user.pk,
         }
@@ -20,6 +21,7 @@ class RegisterUserView(generics.CreateAPIView):
         if profile_serializer.is_valid():
             profile = profile_serializer.save()
         else:
+            print(profile_serializer.errors)
             user.delete()
             raise ValueError("Failed to create profile")
 
@@ -45,7 +47,7 @@ class UserRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
 class InstructorProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     queryset = InstructorProfile.objects.all()
-    serializer_class = InstructorProfileSerializer
+    serializer_class = UserProfileSerializer
 
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
