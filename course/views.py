@@ -21,14 +21,6 @@ def is_valid_instructor(serializer):
     except Http404:
         return Instructor.NOT_FOUND_INSTRUCTOR
 
-
-def is_instructor(serializer):
-    instructor = serializer.validated_data.get('course_instructor')
-    if not instructor.is_instructor:
-        return Instructor.NOT_AN_INSTRUCTOR
-    return instructor
-
-
 class CourseCreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         data = JSONParser().parse(request)
@@ -40,10 +32,6 @@ class CourseCreateView(generics.CreateAPIView):
                 return Response("Not found instructor")
 
         if serializer.is_valid():
-            instructor = is_instructor(serializer)
-            print(instructor)
-            if instructor == Instructor.NOT_AN_INSTRUCTOR:
-                return Response("Not an instructor")
             serializer.save()
             return Response(serializer.data)
 
