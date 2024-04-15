@@ -4,13 +4,15 @@ from user.model.profile import InstructorProfile
 from user.models import UserModel
 
 
-class InstructorProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InstructorProfile
-        fields = '__all__'
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = '__all__'
+        fields = ['user_name', 'email']
+
+
+class InstructorProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = InstructorProfile
+        fields = ['first_name', 'last_name', 'experience', 'subject', 'user']

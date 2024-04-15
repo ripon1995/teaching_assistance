@@ -41,3 +41,13 @@ class UserRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         user = self.get_object()
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+
+class InstructorProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = InstructorProfile.objects.all()
+    serializer_class = InstructorProfileSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
