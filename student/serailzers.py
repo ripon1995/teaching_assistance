@@ -18,3 +18,9 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['name', 'father_name', 'mother_name', 'contact_number', 'father_contact_number', 'start_date']
+
+
+class StudentAttendanceListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['name']

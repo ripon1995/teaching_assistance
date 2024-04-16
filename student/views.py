@@ -4,7 +4,8 @@ from rest_framework.response import Response
 
 from course.models import Course
 from student.models import Student
-from student.serailzers import StudentSerializer, StudentRetrieveSerializer, StudentUpdateSerializer
+from student.serailzers import StudentSerializer, StudentRetrieveSerializer, StudentUpdateSerializer, \
+    StudentAttendanceListSerializer
 
 
 class StudentCreateView(generics.CreateAPIView):
@@ -53,3 +54,22 @@ class StudentUpdateView(generics.UpdateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentAttendanceListView(generics.ListAPIView):
+    print("calling now")
+    serializer_class = StudentAttendanceListSerializer
+
+    def get_queryset(self):
+        course_id = self.kwargs.get('course_id')
+        course = get_object_or_404(Course, pk=course_id)
+        queryset = Student.objects.filter(course=course)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
