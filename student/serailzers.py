@@ -39,9 +39,31 @@ class StudentRetrieveSerializer(serializers.ModelSerializer):
 
 
 class StudentUpdateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False, max_length=30, min_length=5, error_messages=NAME_ERROR_MESSAGE)
+    father_name = serializers.CharField(required=False, max_length=30, min_length=5, error_messages=NAME_ERROR_MESSAGE)
+    mother_name = serializers.CharField(required=False, max_length=30, min_length=5, error_messages=NAME_ERROR_MESSAGE)
+    contact_number = serializers.CharField(required=False, max_length=11, min_length=11,
+                                           error_messages=CONTACT_ERROR_MESSAGE)
+    father_contact_number = serializers.CharField(required=False, max_length=11, min_length=11,
+                                                  error_messages=CONTACT_ERROR_MESSAGE)
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+
+    def validate(self, attrs):
+        contact_number = attrs.get('contact_number')
+        if contact_number and Student.objects.exclude(pk=self.instance.pk).filter(
+                contact_number=contact_number).exists():
+            raise serializers.ValidationError(CONTACT_ERROR_MESSAGE['unique'])
+
+        father_contact_number = attrs.get('father_contact_number')
+        if father_contact_number and Student.objects.exclude(pk=self.instance.pk).filter(
+                father_contact_number=father_contact_number).exists():
+            raise serializers.ValidationError(CONTACT_ERROR_MESSAGE['unique'])
+
+        return attrs
+
     class Meta:
         model = Student
-        fields = ['name', 'father_name', 'mother_name', 'contact_number', 'father_contact_number', 'start_date']
+        fields = '__all__'
 
 
 class StudentAttendanceListSerializer(serializers.ModelSerializer):
