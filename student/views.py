@@ -9,19 +9,7 @@ from student.serailzers import StudentSerializer, StudentRetrieveSerializer, Stu
 
 
 class StudentCreateView(generics.CreateAPIView):
-    queryset = Student.objects.all()
     serializer_class = StudentSerializer
-
-    def create(self, request, *args, **kwargs):
-        course_id = self.kwargs.get('course_id')
-        request.data['course_id'] = course_id
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class StudentRetrieveView(generics.RetrieveAPIView):
     queryset = Student.objects.all()
@@ -33,6 +21,8 @@ class StudentRetrieveView(generics.RetrieveAPIView):
 
         student_id = self.kwargs.get('student_id')
         student = get_object_or_404(Student, pk=student_id, course=course)
+        # TODO: improve filtering
+        st = Student.objects.filter(student_id=student_id, course_id=course_id)
 
         serializer = self.get_serializer(student)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -57,7 +47,6 @@ class StudentUpdateView(generics.UpdateAPIView):
 
 
 class StudentAttendanceListView(generics.ListAPIView):
-    print("calling now")
     serializer_class = StudentAttendanceListSerializer
 
     def get_queryset(self):
@@ -65,11 +54,6 @@ class StudentAttendanceListView(generics.ListAPIView):
         course = get_object_or_404(Course, pk=course_id)
         queryset = Student.objects.filter(course=course)
         return queryset
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
