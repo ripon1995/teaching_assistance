@@ -64,9 +64,3 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
-
-
-class StudentAttendanceListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Student
-        fields = ['id', 'name']
