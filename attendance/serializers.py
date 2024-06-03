@@ -11,14 +11,40 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class StudentAttendanceListSerializer(serializers.ModelSerializer):
-    student = StudentSerializer()
+    student = StudentSerializer(read_only=True)
 
     class Meta:
         model = Attendance
         fields = '__all__'
 
 
-class UploadAttendanceListSerializer(serializers.ModelSerializer):
+class BulkStudentAttendanceListUpdateSerializer(serializers.ListSerializer):
+    def update(self, queryset, validated_data):
+        instance_mapping = {instance.id: instance for instance in queryset}
+        data_mapping = {item['id']: item for item in validated_data}
+
+        updated_instances = []
+        for instance_id, data in data_mapping.items():
+            instance = instance_mapping.get(instance_id, None)
+            if instance is not None:
+                for attr, value in data.items():
+                    setattr(instance, attr, value)
+                instance.save()
+                updated_instances.append(instance)
+
+        return updated_instances
+
+
+class AttendancesUpdateSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
     class Meta:
         model = Attendance
-        fields = '__all__'
+        fields = ['id', 'status']
+        list_serializer_class = BulkStudentAttendanceListUpdateSerializer
+
+
+class AttendanceUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ['id', 'status']
