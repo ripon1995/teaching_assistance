@@ -1,11 +1,6 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework import generics, status
-from rest_framework.response import Response
-
-from course.models import Course
+from rest_framework import generics
 from student.models import Student
-from student.serailzers import StudentSerializer, StudentRetrieveSerializer, StudentUpdateSerializer, \
-    StudentAttendanceListSerializer
+from student.serailzers import StudentSerializer, StudentRetrieveSerializer, StudentUpdateSerializer
 
 
 class StudentCreateView(generics.CreateAPIView):
@@ -28,12 +23,3 @@ class StudentUpdateView(generics.UpdateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentUpdateSerializer
 
-
-class StudentAttendanceListView(generics.ListAPIView):
-    serializer_class = StudentAttendanceListSerializer
-
-    def get_queryset(self):
-        course_id = self.kwargs.get('course_id')
-        course = get_object_or_404(Course, pk=course_id)
-        queryset = Student.objects.filter(course=course)
-        return queryset
