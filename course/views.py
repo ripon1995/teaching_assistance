@@ -4,7 +4,7 @@ from rest_framework import generics
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from course.serializers import CourseSerializer, CourseEnrollSerializer, EnrolledCoursesSerializer, \
-    StudentListOfEnrolledCourseSerializer
+    StudentListOfEnrolledCourseSerializer, CourseGetSerializer
 from user.models import UserModel
 from course.models import Course, CourseEnroll
 from enum import Enum
@@ -43,7 +43,7 @@ class CourseRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         course = self.get_object()
-        serializer = CourseSerializer(course)
+        serializer = CourseGetSerializer(course)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):

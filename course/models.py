@@ -1,5 +1,7 @@
+
 from django.db import models
 from user.models import UserModel
+from django.utils import timezone
 
 
 class Course(models.Model):
@@ -11,6 +13,8 @@ class Course(models.Model):
     capacity = models.IntegerField(default=100)
     start_date = models.DateField(blank=False)
     end_date = models.DateField(blank=False)
+    days = models.JSONField(default=list,blank=False)
+    batch_time = models.TimeField(default="15:00:00Z",blank=False)
 
 
 class CourseEnroll(models.Model):

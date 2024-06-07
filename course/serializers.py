@@ -8,10 +8,13 @@ class InstructorSerializer(serializers.ModelSerializer):
         model = UserModel
         fields = ['id', 'user_name']
 
+class CourseGetSerializer(serializers.ModelSerializer):
+    course_instructor = InstructorSerializer(read_only=True)
+    class Meta:
+        model = Course
+        fields = '__all__'
 
 class CourseSerializer(serializers.ModelSerializer):
-    course_instructor = InstructorSerializer(read_only=True)
-
     class Meta:
         model = Course
         fields = '__all__'
